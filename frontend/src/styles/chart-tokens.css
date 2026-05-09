@@ -1,0 +1,18 @@
+:root {
+  --chart-green: #1d9e75;
+  --chart-blue: #378add;
+  --chart-amber: #ef9f27;
+  --chart-red: #d85a30;
+  --chart-card-bg: #ffffff;
+  --chart-card-border: #eceae4;
+  --chart-card-radius: 20px;
+  --chart-card-padding: 20px;
+  --chart-grid-color: rgba(28, 28, 28, 0.08);
+  --chart-axis-color: #888780;
+  --chart-axis-font-size: 10px;
+  --switcher-border: #d9d6cf;
+  --switcher-active-bg: #1c1c1c;
+  --switcher-active-text: #fcfbf8;
+  --switcher-radius: 10px;
+  --switcher-height: 34px;
+}
