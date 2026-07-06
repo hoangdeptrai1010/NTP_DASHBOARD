@@ -524,9 +524,9 @@ cd backend
 |:---|:---|
 | **Name** | Hoang Nguyen |
 | **GitHub** | [@hoangdeptrai1010](https://github.com/hoangdeptrai1010) |
-| **LinkedIn** | [Your LinkedIn Profile](#) |
-| **Email** | [your.email@example.com](mailto:your.email@example.com) |
-| **Portfolio** | [Your Portfolio URL](#) |
+| **LinkedIn** | [hoangdeptrai](#www.linkedin.com/in/hoangdeptrai) |
+| **Email** | [hoangngtr](mailto:10102005nth@gmail.com) |
+| **Portfolio** | [hoangngtr](#https://bit.ly/hoangngtr) |
 
 > Update the placeholder links above with your actual profile URLs.
 
