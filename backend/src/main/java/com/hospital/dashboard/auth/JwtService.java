@@ -27,6 +27,7 @@ public class JwtService {
         Instant now = Instant.now();
         return Jwts.builder()
             .subject(user.getUsername())
+            .claim("userId", user.getUserId())
             .claim("role", user.getRole().getRoleCode())
             .claim("departmentId", user.getDepartmentId())
             .claim("fullName", user.getFullName())

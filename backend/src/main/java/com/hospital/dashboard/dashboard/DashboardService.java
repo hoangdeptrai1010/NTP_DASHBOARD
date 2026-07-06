@@ -50,8 +50,8 @@ public class DashboardService {
 
         String deptSql = "SELECT k.TENKHOAPHONG as dept, SUM(v.TONG_BHYT_TRA) as bhyt, SUM(v.TONG_BN_TRA) as bn, SUM(v.TONGTIEN) as total " +
                          "FROM VIENPHI v JOIN DMKHOAPHONGBV k ON v.IDKHOAPHONG = k.IDKHOAPHONG " + 
-                         "WHERE v.NGAYTHANHTOAN IS NOT NULL GROUP BY k.TENKHOAPHONG ORDER BY total DESC FETCH FIRST 10 ROWS ONLY";
-        List<DeptCompareItem> topDepartments = jdbcTemplate.query(deptSql, new MapSqlParameterSource(), 
+                         baseWhere + " GROUP BY k.TENKHOAPHONG ORDER BY total DESC FETCH FIRST 10 ROWS ONLY";
+        List<DeptCompareItem> topDepartments = jdbcTemplate.query(deptSql, params, 
             (rs, rowNum) -> new DeptCompareItem(rs.getString("dept"), rs.getDouble("bhyt"), rs.getDouble("bn")));
 
         RevenueResponse revenue;
@@ -116,8 +116,8 @@ public class DashboardService {
         // Top 10 Departments
         String deptSql = "SELECT k.TENKHOAPHONG as dept, SUM(v.TONG_BHYT_TRA) as bhyt, SUM(v.TONG_BN_TRA) as bn, SUM(v.TONGTIEN) as total " +
                          "FROM VIENPHI v JOIN DMKHOAPHONGBV k ON v.IDKHOAPHONG = k.IDKHOAPHONG " + 
-                         "WHERE v.NGAYTHANHTOAN IS NOT NULL GROUP BY k.TENKHOAPHONG ORDER BY total DESC FETCH FIRST 10 ROWS ONLY";
-        List<DeptCompareItem> topDepartments = jdbcTemplate.query(deptSql, new MapSqlParameterSource(), 
+                         baseWhere + " GROUP BY k.TENKHOAPHONG ORDER BY total DESC FETCH FIRST 10 ROWS ONLY";
+        List<DeptCompareItem> topDepartments = jdbcTemplate.query(deptSql, params, 
             (rs, rowNum) -> new DeptCompareItem(rs.getString("dept"), rs.getDouble("bhyt"), rs.getDouble("bn")));
 
         return new AnalysisResponse(treatmentRatio, paymentRatio, topDepartments);
@@ -197,18 +197,13 @@ public class DashboardService {
                 break;
         }
 
-        try {
-            List<RevenuePointResponse> points = new ArrayList<>(jdbcTemplate.query(
-                sql,
-                params,
-                (rs, rowNum) -> new RevenuePointResponse(rs.getString("label"), rs.getLong("amount"))
-            ));
-            
-            return new RevenueResponse(normalizedPeriod, departmentId, points);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new RevenueResponse(normalizedPeriod, departmentId, List.of());
-        }
+        List<RevenuePointResponse> points = new ArrayList<>(jdbcTemplate.query(
+            sql,
+            params,
+            (rs, rowNum) -> new RevenuePointResponse(rs.getString("label"), rs.getLong("amount"))
+        ));
+        
+        return new RevenueResponse(normalizedPeriod, departmentId, points);
     }
 
     private long queryForLong(String sql, MapSqlParameterSource params) {

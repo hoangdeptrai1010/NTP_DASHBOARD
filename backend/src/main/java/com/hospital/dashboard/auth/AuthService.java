@@ -68,7 +68,7 @@ public class AuthService {
     public ResponseCookie clearRefreshCookie() {
         return ResponseCookie.from(REFRESH_COOKIE, "")
             .httpOnly(true)
-            .secure(false)
+            .secure(true)
             .sameSite("Lax")
             .path("/api/auth")
             .maxAge(0)

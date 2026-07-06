@@ -1,5 +1,6 @@
 package com.hospital.dashboard.auth;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,7 +19,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final AppUserRepository appUserRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -28,10 +28,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             try {
-                String username = jwtService.parse(token).getSubject();
-                appUserRepository.findByUsernameIgnoreCase(username)
-                    .filter(AppUser::isActive)
-                    .ifPresent(user -> SecurityContextHolder.getContext().setAuthentication(new AuthUser(user)));
+                Claims claims = jwtService.parse(token);
+                String username = claims.getSubject();
+                Long userId = claims.get("userId", Long.class);
+                String roleCode = claims.get("role", String.class);
+                Long departmentId = claims.get("departmentId", Long.class);
+                String fullName = claims.get("fullName", String.class);
+
+                if (username != null && roleCode != null) {
+                    AppRole role = new AppRole();
+                    role.setRoleCode(roleCode);
+
+                    AppUser user = new AppUser();
+                    user.setUserId(userId);
+                    user.setUsername(username);
+                    user.setRole(role);
+                    user.setDepartmentId(departmentId);
+                    user.setFullName(fullName);
+                    user.setActiveFlag(1);
+
+                    SecurityContextHolder.getContext().setAuthentication(new AuthUser(user));
+                }
             } catch (JwtException | AuthException ignored) {
                 SecurityContextHolder.clearContext();
             }
