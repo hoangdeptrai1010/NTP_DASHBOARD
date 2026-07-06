@@ -48,13 +48,20 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.stream(appProperties.cors().allowedOrigins().split(","))
+        List<String> origins = Arrays.stream(appProperties.cors().allowedOrigins().split(","))
             .map(String::trim)
             .filter(value -> !value.isBlank())
-            .toList());
+            .toList();
+        
+        if (origins.contains("*")) {
+            config.setAllowedOriginPatterns(List.of("*"));
+            config.setAllowCredentials(false);
+        } else {
+            config.setAllowedOrigins(origins);
+            config.setAllowCredentials(true);
+        }
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
 
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

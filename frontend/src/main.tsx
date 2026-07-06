@@ -7,7 +7,13 @@ import { AuthBootstrap } from './ui/AuthBootstrap'
 import './styles/chart-tokens.css'
 import './styles.css'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

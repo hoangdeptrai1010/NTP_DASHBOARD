@@ -54,9 +54,16 @@ public class DashboardService {
         List<DeptCompareItem> topDepartments = jdbcTemplate.query(deptSql, new MapSqlParameterSource(), 
             (rs, rowNum) -> new DeptCompareItem(rs.getString("dept"), rs.getDouble("bhyt"), rs.getDouble("bn")));
 
+        RevenueResponse revenue;
+        if ("DOCTOR".equalsIgnoreCase(user.getRole().getRoleCode())) {
+            revenue = new RevenueResponse(period, departmentId, List.of());
+        } else {
+            revenue = buildRevenue(period, departmentId);
+        }
+
         return new DashboardSnapshotResponse(
             buildKpis(departmentId),
-            buildRevenue(period, departmentId),
+            revenue,
             smRatio,
             topDepartments
         );
@@ -119,6 +126,9 @@ public class DashboardService {
     private Long resolveDepartment(AppUser user, Long requestedDepartmentId) {
         String roleCode = user.getRole().getRoleCode();
         if ("DEPARTMENT_HEAD".equalsIgnoreCase(roleCode) || "DOCTOR".equalsIgnoreCase(roleCode)) {
+            if (user.getDepartmentId() == null) {
+                throw new AccessDeniedException("Tài khoản chưa được gán khoa phòng quản lý.");
+            }
             return user.getDepartmentId();
         }
         return requestedDepartmentId != null ? requestedDepartmentId : user.getDepartmentId();
@@ -145,7 +155,7 @@ public class DashboardService {
     }
 
     private RevenueResponse buildRevenue(String period, Long departmentId) {
-        String normalizedPeriod = period == null || period.isBlank() ? "week" : period;
+        String normalizedPeriod = period == null || period.isBlank() ? "month" : period;
         
         String deptFilter = departmentId == null
             ? ""
@@ -155,32 +165,33 @@ public class DashboardService {
         String sql;
         switch (normalizedPeriod) {
             case "year":
-                // Nhóm theo năm, hiện tất cả từ 2016
-                sql = "SELECT TO_CHAR(EXTRACT(YEAR FROM NGAYTHANHTOAN)) as label, " +
-                      "SUM(TONGTIEN) as amount " +
-                      "FROM VIENPHI WHERE NGAYTHANHTOAN IS NOT NULL" + deptFilter + " " +
-                      "GROUP BY EXTRACT(YEAR FROM NGAYTHANHTOAN) " +
-                      "ORDER BY EXTRACT(YEAR FROM NGAYTHANHTOAN)";
+                sql = "SELECT TO_CHAR(NAM) as label, " +
+                      "SUM(DOANHTHU) as amount " +
+                      "FROM MV_REVENUE_YEARLY " +
+                      (departmentId == null ? "WHERE 1=1" : "WHERE IDKHOAPHONG = :departmentId") + " " +
+                      "GROUP BY NAM " +
+                      "ORDER BY NAM";
                 break;
             case "quarter":
-                // Nhóm theo quý, 8 quý gần nhất
                 sql = "SELECT * FROM (" +
-                      "SELECT 'Q' || TO_CHAR(NGAYTHANHTOAN, 'Q') || '/' || EXTRACT(YEAR FROM NGAYTHANHTOAN) as label, " +
-                      "SUM(TONGTIEN) as amount, " +
-                      "TO_NUMBER(TO_CHAR(NGAYTHANHTOAN, 'YYYYQ')) as sort_key " +
-                      "FROM VIENPHI WHERE NGAYTHANHTOAN IS NOT NULL" + deptFilter + " " +
-                      "GROUP BY TO_CHAR(NGAYTHANHTOAN, 'Q'), EXTRACT(YEAR FROM NGAYTHANHTOAN), TO_NUMBER(TO_CHAR(NGAYTHANHTOAN, 'YYYYQ')) " +
+                      "SELECT 'Q' || MOD(NAMQUY, 10) || '/' || TRUNC(NAMQUY / 10) as label, " +
+                      "SUM(DOANHTHU) as amount, " +
+                      "NAMQUY as sort_key " +
+                      "FROM MV_REVENUE_QUARTERLY " +
+                      (departmentId == null ? "WHERE 1=1" : "WHERE IDKHOAPHONG = :departmentId") + " " +
+                      "GROUP BY NAMQUY " +
                       "ORDER BY sort_key DESC" +
                       ") WHERE ROWNUM <= 8 ORDER BY sort_key";
                 break;
-            default: // week
-                // Nhóm theo tháng, 12 tháng gần nhất
+            case "month":
+            default:
                 sql = "SELECT * FROM (" +
-                      "SELECT TO_CHAR(NGAYTHANHTOAN, 'MM/YYYY') as label, " +
-                      "SUM(TONGTIEN) as amount, " +
-                      "TO_CHAR(NGAYTHANHTOAN, 'YYYY-MM') as sort_key " +
-                      "FROM VIENPHI WHERE NGAYTHANHTOAN IS NOT NULL" + deptFilter + " " +
-                      "GROUP BY TO_CHAR(NGAYTHANHTOAN, 'MM/YYYY'), TO_CHAR(NGAYTHANHTOAN, 'YYYY-MM') " +
+                      "SELECT TO_CHAR(THANG, 'MM/YYYY') as label, " +
+                      "SUM(DOANHTHU) as amount, " +
+                      "TO_CHAR(THANG, 'YYYY-MM') as sort_key " +
+                      "FROM MV_REVENUE_MONTHLY " +
+                      (departmentId == null ? "WHERE 1=1" : "WHERE IDKHOAPHONG = :departmentId") + " " +
+                      "GROUP BY THANG " +
                       "ORDER BY sort_key DESC" +
                       ") WHERE ROWNUM <= 12 ORDER BY sort_key";
                 break;

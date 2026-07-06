@@ -15,7 +15,7 @@ public class LayoutService {
     private final ObjectMapper objectMapper;
 
     public LayoutPreference getCurrentLayout(AppUser user) {
-        return layoutPreferenceRepository.findById(user.getUserId())
+        return layoutPreferenceRepository.findByUserId(user.getUserId())
             .map(LayoutPreferenceEntity::getLayoutJson)
             .filter(json -> json != null && !json.isBlank())
             .map(this::fromJson)
@@ -23,7 +23,7 @@ public class LayoutService {
     }
 
     public LayoutPreference saveLayout(AppUser user, LayoutPreference layoutPreference) {
-        LayoutPreferenceEntity entity = layoutPreferenceRepository.findById(user.getUserId())
+        LayoutPreferenceEntity entity = layoutPreferenceRepository.findByUserId(user.getUserId())
             .orElseGet(() -> {
                 LayoutPreferenceEntity created = new LayoutPreferenceEntity();
                 created.setUserId(user.getUserId());

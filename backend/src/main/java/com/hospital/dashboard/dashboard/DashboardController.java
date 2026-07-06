@@ -16,7 +16,7 @@ public class DashboardController {
 
     @GetMapping("/snapshot")
     public DashboardSnapshotResponse getSnapshot(
-        @RequestParam(defaultValue = "week") String period,
+        @RequestParam(defaultValue = "month") String period,
         @RequestParam(required = false) Long departmentId,
         Authentication authentication
     ) {
@@ -25,7 +25,7 @@ public class DashboardController {
 
     @GetMapping("/revenue")
     public RevenueResponse getRevenue(
-        @RequestParam(defaultValue = "week") String period,
+        @RequestParam(defaultValue = "month") String period,
         @RequestParam(required = false) Long departmentId,
         Authentication authentication
     ) {
@@ -34,7 +34,7 @@ public class DashboardController {
 
     @GetMapping("/analysis")
     public AnalysisResponse getAnalysis(
-        @RequestParam(defaultValue = "week") String period,
+        @RequestParam(defaultValue = "month") String period,
         @RequestParam(required = false) Long departmentId,
         Authentication authentication
     ) {

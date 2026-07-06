@@ -4,13 +4,13 @@ import { ChartCard } from './charts/ChartCard'
 import { TrendChart } from './charts/TrendChart'
 
 const PERIOD_LABELS: Record<RevenueResponse['period'], string> = {
-  week: 'Theo tháng · 12 tháng gần nhất',
+  month: 'Theo tháng · 12 tháng gần nhất',
   quarter: 'Theo quý · 8 quý gần nhất',
   year: 'Theo năm · Tất cả các năm',
 }
 
 const PERIOD_BADGES: Record<RevenueResponse['period'], string> = {
-  week: 'Tuần',
+  month: 'Tháng',
   quarter: 'Quý',
   year: 'Năm',
 }

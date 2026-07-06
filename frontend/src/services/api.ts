@@ -14,6 +14,9 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() || undefined
 export const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
+  headers: {
+    'X-Requested-With': 'XMLHttpRequest',
+  },
 })
 
 let refreshPromise: Promise<string> | null = null

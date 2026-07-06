@@ -19,9 +19,9 @@ This document provides a comprehensive overview of the frontend architecture and
 These are the main pages mapped to specific routes.
 
 *   **`DashboardPage.tsx`**: The core application view. It orchestrates the dashboard by:
-    *   Providing global filters for Time Period (Week, Quarter, Year) and Department.
-    *   Fetching dashboard snapshot data (KPIs, Revenue, Inventory) via React Query.
-    *   Rendering sub-components like `KpiCard`, `RevenuePanel`, and `InventoryPanel`.
+    *   Providing global filters for Time Period (Month, Quarter, Year) and Department.
+    *   Fetching dashboard snapshot data (KPIs, Revenue) via React Query.
+    *   Rendering sub-components like `KpiCard` and `RevenuePanel`.
 *   **`LoginPage.tsx`**: Handles user authentication, collecting credentials and calling the auth service.
 *   **`ReportPage.tsx`**: A dedicated page for analytics and report data exports.
 *   **`UnauthorizedPage.tsx`**: A fallback page displayed when a user attempts to access a route restricted by their Role-Based Access Control (RBAC) level.
@@ -38,8 +38,6 @@ Specific components that display data on the Dashboard.
 
 *   **`KpiCard.tsx`**: Displays individual Key Performance Indicators (e.g., Total Revenue, Patient Count).
 *   **`RevenuePanel.tsx`**: The primary chart container for revenue visualization. Integrates the chart switcher and the actual chart component.
-*   **`RevenueMomentsPanel.tsx`**: A supplementary panel displaying specific highlights or breakdown metrics related to the revenue data.
-*   **`InventoryPanel.tsx`**: A list/table view showing inventory alerts (e.g., low stock for medicines/supplies).
 
 ### 4. Charts (`src/ui/charts/`)
 Custom data visualization components built with raw SVGs.

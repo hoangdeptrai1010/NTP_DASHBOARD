@@ -8,6 +8,9 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+
 @Getter
 @Setter
 @Entity
@@ -15,7 +18,11 @@ import lombok.Setter;
 public class LayoutPreferenceEntity {
 
     @Id
-    @Column(name = "USER_ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "PREF_ID")
+    private Long prefId;
+
+    @Column(name = "USER_ID", unique = true)
     private Long userId;
 
     @Lob

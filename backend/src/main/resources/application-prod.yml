@@ -1,0 +1,12 @@
+app:
+  cors:
+    allowed-origins: https://dashboard.hospital.vn
+  jwt:
+    secret: ${JWT_SECRET}
+spring:
+  datasource:
+    username: ${DB_USER}
+    password: ${DB_PASS}
+  data:
+    redis:
+      password: ${REDIS_PASS}

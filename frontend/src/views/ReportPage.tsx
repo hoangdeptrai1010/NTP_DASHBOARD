@@ -7,7 +7,7 @@ import { DonutChart } from '../ui/charts/DonutChart'
 import { StackedBarChart } from '../ui/charts/StackedBarChart'
 
 const periods: Array<{ value: Period; label: string }> = [
-  { value: 'week', label: 'Tuần' },
+  { value: 'month', label: 'Tháng' },
   { value: 'quarter', label: 'Quý' },
   { value: 'year', label: 'Năm' },
 ]
@@ -15,7 +15,7 @@ const periods: Array<{ value: Period; label: string }> = [
 export function ReportPage() {
   const user = authStore((state) => state.user)
   const canPickDepartment = user?.role === 'DIRECTOR'
-  const [period, setPeriod] = useState<Period>('week')
+  const [period, setPeriod] = useState<Period>('month')
   const [departmentId, setDepartmentId] = useState<number | null>(null)
 
   const departmentsQuery = useQuery({

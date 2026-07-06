@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.AccessDeniedException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -29,8 +30,12 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<RefreshResponse> refresh(
-        @CookieValue(name = AuthService.REFRESH_COOKIE, required = false) String refreshToken
+        @CookieValue(name = AuthService.REFRESH_COOKIE, required = false) String refreshToken,
+        HttpServletRequest request
     ) {
+        if (!"XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            throw new AccessDeniedException("Missing CSRF token header.");
+        }
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new AuthException("Missing refresh token.");
         }
@@ -42,6 +47,9 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request) {
+        if (!"XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            throw new AccessDeniedException("Missing CSRF token header.");
+        }
         String refreshToken = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {

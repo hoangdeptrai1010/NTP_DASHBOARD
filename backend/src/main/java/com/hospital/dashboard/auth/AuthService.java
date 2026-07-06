@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.hospital.dashboard.config.AppProperties;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class AuthService {
     private final DepartmentRepository departmentRepository;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final AppProperties appProperties;
 
     public AuthPayload login(LoginRequest request) {
         AppUser user = appUserRepository.findByUsernameIgnoreCase(request.username().trim())
@@ -56,10 +58,10 @@ public class AuthService {
     public ResponseCookie buildRefreshCookie(String refreshToken) {
         return ResponseCookie.from(REFRESH_COOKIE, refreshToken)
             .httpOnly(true)
-            .secure(false)
+            .secure(true)
             .sameSite("Lax")
             .path("/api/auth")
-            .maxAge(7 * 24 * 60 * 60)
+            .maxAge(appProperties.jwt().refreshTokenDays() * 24 * 60 * 60)
             .build();
     }
 

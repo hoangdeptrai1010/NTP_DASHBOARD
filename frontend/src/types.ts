@@ -1,5 +1,5 @@
 export type Role = 'DIRECTOR' | 'DEPARTMENT_HEAD' | 'DOCTOR'
-export type Period = 'week' | 'quarter' | 'year'
+export type Period = 'month' | 'quarter' | 'year'
 
 export interface UserProfile {
   id: number
